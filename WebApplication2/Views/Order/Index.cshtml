@@ -1,0 +1,109 @@
+﻿@model WebApplication2.Models.OrderSearchArg
+@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("Index", "Order", FormMethod.Post, new { id = "Form1" }))
+        {
+            <table class="table table-bordered">
+                <tr>
+                    <td>訂單編號</td>
+                    <td>@Html.TextBoxFor(model => model.OrderId)</td>
+                </tr>
+                <tr>
+                    <td>客戶名稱</td>
+                    <td>@Html.TextBoxFor(model => model.CustName)</td>
+                </tr>
+                <tr>
+                    <td>負責員工</td>
+                    <td>
+                        @Html.DropDownListFor(model =>model.EmpId, (List<SelectListItem>)ViewBag.EmpData,"請選擇")
+                    </td>
+                </tr>
+                <tr>                    
+                    <td>出貨公司</td>
+                    <td>
+                        @Html.DropDownListFor(model => model.ShipperId, (List<SelectListItem>)ViewBag.ShipperData,"請選擇")
+                    </td>
+                </tr>
+                <tr>
+                    <td>訂購日期</td>
+                    <td>@Html.TextBoxFor(model => model.OrderDate, new { @type = "date" })</td>
+                    <td>出貨日期</td>
+                    <td>@Html.TextBoxFor(model => model.ShippedDate, new { @type = "date" })</td>
+                </tr>
+                <tr>
+                    <td>需要日期</td>
+                    <td>@Html.TextBoxFor(model => model.RequiredDate, new { @type = "date" })</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                                <input type="submit" value="查詢"/>
+                                <input type="reset" value="清除" />
+                                @Html.ActionLink("新增訂單","InsertOrder")
+                            </td>
+                        </tr>
+                    </table>
+                     }
+    </div>
+    <div>   
+     查詢結果
+        <table id="seachResult" border="0" class="table table-bordered">
+              <tr>
+                   <td>訂單編號</td>
+                   <td>客戶名稱</td>
+                   <td>訂購日期</td>
+                   <td>發貨日期</td>
+                   <td></td>
+                   <td></td>
+               </tr>
+            @{if (ViewBag.seachOrder == true)
+                {
+
+                    foreach (var item in (List<WebApplication2.Models.Order>)ViewBag.selectOrder)
+                    {
+                        <tr id="@item.OrderId">
+                            <td>@item.OrderId</td>
+                            <td>@item.CustName</td>
+                            <td>@item.OrderDate</td>
+                            <td>@item.ShippedDate</td>
+                            <td><button value="@item.OrderId" onclick="UpdateOrder()">修改</button></td>
+                            <td>
+                                <a class="btnDelete" href="#">刪除</a>
+                                <input  type="hidden"  value="@item.OrderId">
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </table>
+        </div>
+        <script type="text/javascript">
+            $(".btnDelete").click(function (e) {
+                debugger;
+                var tr = $(this).closest('tr')
+                $.ajax({
+                    type: "POST",
+                    url: "/Order/deleteOrder",
+                    dataType: "json",
+                    data: {orderid: $(this).next().val() },
+                    success: function (response) {
+                        alert("耶");
+                    }
+                });
+
+            });
+        </script>
+</body>
+</html>
+
